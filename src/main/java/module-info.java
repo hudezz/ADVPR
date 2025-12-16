@@ -1,4 +1,10 @@
-module week4lab {
+module ADVPR {
     requires javafx.controls;
-    exports week4lab;
+    requires javafx.fxml;
+    requires org.slf4j;            // Logging support
+    requires java.sql;             // Often needed for database/AI dependencies
+    requires org.apache.pdfbox;    // For your PDF reading features later
+
+    opens ADVPR to javafx.fxml;
+    exports ADVPR;
 }
