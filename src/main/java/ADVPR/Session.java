@@ -1,30 +1,26 @@
-package ADVPR; // <--- THIS IS THE IMPORTANT CHANGE
+package ADVPR;
 
-/**
- * Session holder for Admin.
- * Adapted for ADVPR package.
- */
-public final class Session {
-    private static boolean adminAuthenticated = false;
-    private static String adminUsername = null;
+public class Session {
 
-    private Session() {}
+    private static String adminUsername;
 
-    public static boolean isAdminAuthenticated() {
-        return adminAuthenticated;
+    // Log the user in
+    public static void authenticateAdmin(String username) {
+        adminUsername = username;
     }
 
+    // Check if logged in (The method SceneManager needs!)
+    public static boolean isLoggedIn() {
+        return adminUsername != null;
+    }
+
+    // Get the name
     public static String getAdminUsername() {
         return adminUsername;
     }
 
-    public static void authenticateAdmin(String username) {
-        adminAuthenticated = true;
-        adminUsername = username;
-    }
-
+    // Log out
     public static void logout() {
-        adminAuthenticated = false;
         adminUsername = null;
     }
 }

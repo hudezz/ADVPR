@@ -5,31 +5,57 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.net.URL;
 
-/**
- * Universal SceneManager.
- * Handles both "Generic" switching (your code) and "Specific" switching (Member 3's code).
- */
 public class SceneManager {
 
-    private static Scene scene;
-
-    // This allows us to access the stage if needed for popups
     private static Stage stage;
+    private static Scene scene;
 
     public static void setStage(Stage s) {
         stage = s;
     }
 
-    // --- 1. THE GENERIC SWITCHER (Your Original Logic) ---
     public static void switchScene(String fxml) {
         try {
-            // Check if string ends with .fxml, if not, add it (Safety)
-            if (!fxml.endsWith(".fxml")) {
-                fxml = fxml + ".fxml";
+            if (!fxml.endsWith(".fxml")) fxml += ".fxml";
+
+            // --- UNIVERSAL SEARCH STRATEGY ---
+            URL fileUrl = null;
+
+            // 1. Check relative to the class (Standard)
+            // Expects: target/classes/ADVPR/Home.fxml
+            fileUrl = App.class.getResource(fxml);
+            if (fileUrl != null) System.out.println("DEBUG: Found relative: " + fileUrl);
+
+            // 2. Check strict package path
+            // Expects: target/classes/ADVPR/Home.fxml
+            if (fileUrl == null) {
+                fileUrl = App.class.getResource("/ADVPR/" + fxml);
+                if (fileUrl != null) System.out.println("DEBUG: Found at /ADVPR/: " + fileUrl);
             }
 
-            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml));
+            // 3. Check ROOT (If you marked ADVPR folder as Source Root)
+            // Expects: target/classes/Home.fxml
+            if (fileUrl == null) {
+                fileUrl = App.class.getResource("/" + fxml);
+                if (fileUrl != null) System.out.println("DEBUG: Found at root /: " + fileUrl);
+            }
+
+            // 4. Check "view" folder (Old Member 3 Location)
+            if (fileUrl == null) {
+                fileUrl = App.class.getResource("/view/" + fxml);
+                if (fileUrl != null) System.out.println("DEBUG: Found at /view/: " + fileUrl);
+            }
+
+            // CRITICAL FAILURE
+            if (fileUrl == null) {
+                System.err.println("❌ CRITICAL ERROR: Could not find '" + fxml + "' in any known location.");
+                System.err.println("   Checked: Relative, /ADVPR/" + fxml + ", /" + fxml + ", and /view/" + fxml);
+                return;
+            }
+
+            FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
             Parent root = fxmlLoader.load();
 
             if (scene == null) {
@@ -38,32 +64,28 @@ public class SceneManager {
             } else {
                 scene.setRoot(root);
             }
-            stage.sizeToScene(); // Optional: Resizes window to fit new content
+            stage.sizeToScene();
+            stage.show();
 
         } catch (IOException e) {
-            System.err.println("CRITICAL ERROR: Could not load FXML file: " + fxml);
+            System.err.println("❌ CRASHED while loading " + fxml);
             e.printStackTrace();
         }
     }
 
-    // --- 2. MEMBER 3'S SPECIFIC HELPERS (The New Logic) ---
-
     public static void switchToHome() {
-        switchScene("Home.fxml");
+        switchScene("Home");
     }
 
     public static void switchToLogin() {
-        switchScene("Login.fxml");
+        switchScene("Login");
     }
 
-    /**
-     * Security Guard: Only lets you pass if you are logged in.
-     */
     public static void switchToAdminDashboard() {
-        if (Session.isAdminAuthenticated()) {
-            switchScene("AdminDashboard.fxml");
+        if (Session.isLoggedIn()) {
+            switchScene("AdminDashboard");
         } else {
-            System.out.println("Access Denied: Admin not authenticated.");
+            System.out.println("Access Denied: Admin not logged in.");
             switchToLogin();
         }
     }

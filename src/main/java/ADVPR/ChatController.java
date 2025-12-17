@@ -1,66 +1,61 @@
 package ADVPR;
 
-package ADVPR;
-
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
 import javafx.application.Platform;
 
 public class ChatController {
 
-    @FXML private VBox messageContainer;
-    @FXML private TextField inputField;
-
-    // 1. Connect to the Real AI Brain
-    private final AIService aiService = new AIService();
+    @FXML
+    private TextArea historyTextArea;
 
     @FXML
-    public void handleSend() {
-        String userText = inputField.getText();
-        if (userText.isEmpty()) return;
+    private TextField questionField;
 
-        // 2. Show User's Message immediately (Green Bubble)
-        addMessage("User: " + userText, true);
-        inputField.clear();
+    // Connect to the PDFManager (The Brain), NOT directly to AIService
+    private final PDFManager pdfManager = new PDFManager();
 
-        // 3. Ask the AI (Run in background so the app doesn't freeze)
+    @FXML
+    public void initialize() {
+        if(historyTextArea != null) {
+            historyTextArea.setText("Welcome! Ask a question about the uploaded PDF.\n\n");
+        }
+    }
+
+    @FXML
+    public void handleAsk(ActionEvent event) {
+        String question = questionField.getText();
+
+        if (question == null || question.trim().isEmpty()) {
+            return;
+        }
+
+        // 1. Show User's Question
+        historyTextArea.appendText("YOU: " + question + "\n");
+        questionField.clear();
+
+        // 2. Get AI Answer in background (Prevent freezing)
         new Thread(() -> {
+            String answer;
             try {
-                // This calls Ollama to get the answer
-                String aiResponse = aiService.getAnswer(userText);
-
-                // Update the screen with the answer (Gray Bubble)
-                Platform.runLater(() -> addMessage("AI: " + aiResponse, false));
-
+                // This calls the method we created in PDFManager
+                answer = pdfManager.askQuestion(question);
             } catch (Exception e) {
-                e.printStackTrace();
-                Platform.runLater(() -> addMessage("Error: Could not connect to AI. Make sure Ollama is running!", false));
+                answer = "Error: " + e.getMessage();
             }
+
+            // 3. Update Screen
+            String finalAnswer = answer;
+            Platform.runLater(() -> {
+                historyTextArea.appendText("AI: " + finalAnswer + "\n\n");
+            });
         }).start();
     }
 
     @FXML
-    public void handleBack() {
-        // Go back to the Dashboard
-        SceneManager.switchScene("Home.fxml");
-    }
-
-    // Helper method to create the chat bubbles
-    private void addMessage(String text, boolean isUser) {
-        Label label = new Label(text);
-        label.setWrapText(true);
-        label.setMaxWidth(350); // Keep bubbles from getting too wide
-
-        if (isUser) {
-            // User style: Light Green
-            label.setStyle("-fx-background-color: lightgreen; -fx-padding: 10; -fx-background-radius: 10;");
-        } else {
-            // AI style: Light Gray
-            label.setStyle("-fx-background-color: lightgray; -fx-padding: 10; -fx-background-radius: 10;");
-        }
-
-        messageContainer.getChildren().add(label);
+    public void handleBack(ActionEvent event) {
+        SceneManager.switchToHome();
     }
 }
