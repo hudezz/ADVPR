@@ -1,20 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="ADVPR.HomeController"
-            prefHeight="400.0" prefWidth="600.0">
-    <children>
-        <Label text="Swineberg ChatBot Dashboard" layoutX="180.0" layoutY="50.0"
-               style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ADVPR.HomeController">
 
-        <Button text="Start Chat" layoutX="250.0" layoutY="120.0"
-                prefWidth="100.0" onAction="#handleStartChat"/>
+    <top>
+        <HBox spacing="10" padding="15">
+            <Label text="Swineberg University of Technology" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+            <HBox HBox.hgrow="ALWAYS" />
+            <Button text="Admin" onAction="#onAdminClick" />
+        </HBox>
+    </top>
 
-        <Button text="Re-Index PDF" fx:id="uploadButton" layoutX="250.0" layoutY="170.0"
-                prefWidth="100.0" onAction="#handleUpload"/>
-    </children>
-</AnchorPane>
+    <center>
+        <VBox spacing="12" padding="20">
+            <Label text="Admission Enquiry Portal" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+            <Label wrapText="true"
+                   text="Welcome! Use the buttons below to interact with the AI Admission Assistant." />
+
+            <HBox spacing="10">
+                <Button text="Re-Index PDF (AI)" onAction="#handleReIndex" style="-fx-background-color: #ffcccc;" />
+
+                <Button text="Ask a Question" onAction="#onOpenChat" />
+                <Button text="FAQ" onAction="#onOpenFAQ" />
+            </HBox>
+
+            <Label text="Tip: You must click 'Re-Index PDF' and pick a file before asking questions." style="-fx-opacity: 0.8; -fx-text-fill: blue;" />
+        </VBox>
+    </center>
+
+</BorderPane>

@@ -1,64 +1,56 @@
-
 package ADVPR;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.scene.control.Alert;
-import java.io.File;
 
 public class HomeController {
 
-    // Dependency: The PDF tool Member 5 built
-    private final DocumentManager documentManager = new DocumentManager();
+    // 1. Connect to the PDF Brain (Your Logic)
+    private final PDFManager pdfManager = new PDFManager();
 
-    // --- BUTTON 1: Start Chat ---
+    // 2. Admin Button (Member 3's Logic)
     @FXML
-    public void handleStartChat() {
-        System.out.println("Start Chat clicked! (We will build the chat screen next)");
-        // Later, we will tell SceneManager to switch to the Chat view here.
+    public void onAdminClick(ActionEvent event) {
+        // This takes us to the new Login screen
+        SceneManager.switchScene("Login.fxml");
     }
 
-    // --- BUTTON 2: Re-Index PDF ---
+    // 3. Chat Button (Merged: Their Name + Your Logic)
     @FXML
-    public void handleUpload() {
-        System.out.println("--- Button Clicked: Starting Upload Process ---");
+    public void onOpenChat(ActionEvent event) {
+        // This was empty in Member 3's code. We added your switch logic back.
+        SceneManager.switchScene("Chat.fxml");
+    }
 
-        // 1. Open the file chooser
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select a PDF File");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("PDF Files", "*.pdf")
-        );
+    // 4. Re-Index Button (Merged: Their Name + Your Logic)
+    // Note: Member 3 might have named this onReIndexPlaceholder or similar in their FXML.
+    // If clicking the button does nothing, check the FXML file for the method name!
+    @FXML
+    public void handleReIndex(ActionEvent event) {
+        try {
+            pdfManager.updateIndex();
 
-        Stage stage = SceneManager.getStage();
-        File selectedFile = fileChooser.showOpenDialog(stage);
+            // Show Success Message
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success");
+            alert.setHeaderText(null);
+            alert.setContentText("PDF Re-Indexed Successfully!");
+            alert.showAndWait();
 
-        if (selectedFile != null) {
-            System.out.println("User selected: " + selectedFile.getName());
-
-            // 2. Save the file
-            File savedFile = documentManager.saveDocument(selectedFile);
-
-            if (savedFile != null) {
-                // 3. Extract text
-                String text = documentManager.extractText(savedFile);
-
-                // 4. Save extracted text
-                documentManager.saveExtractedText(text, savedFile.getName());
-
-                // 5. Show Success Message
-                showAlert("Success", "PDF Processed!", "Extracted " + text.length() + " characters.");
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Show Error Message
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("Failed to index PDF: " + e.getMessage());
+            alert.showAndWait();
         }
     }
 
-    // Helper for popup messages
-    private void showAlert(String title, String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
+    // 5. FAQ Button (Placeholder for now)
+    @FXML
+    public void onOpenFAQ(ActionEvent event) {
+        System.out.println("FAQ button clicked - Feature coming soon.");
     }
 }

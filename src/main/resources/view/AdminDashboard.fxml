@@ -1,14 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="$CONTROLLER_NAME$"
-            prefHeight="400.0" prefWidth="600.0" >
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ADVPR.AdminDashboardController">
 
-</AnchorPane>
+    <top>
+        <HBox spacing="10" padding="15">
+            <Label text="Admin Dashboard" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="adminWelcomeLabel" text="Logged in as: admin" />
+            <Button text="Logout" onAction="#onLogout" />
+        </HBox>
+    </top>
+
+    <center>
+        <TabPane>
+            <tabs>
+                <Tab text="Upload Documents" closable="false">
+                    <BorderPane padding="15">
+                        <top>
+                            <VBox spacing="8">
+                                <Label text="Manage admission documents (PDF/DOCX/TXT)." />
+                                <HBox spacing="10">
+                                    <Button text="Choose File" onAction="#onChooseFile" />
+                                    <Button text="Upload" onAction="#onUpload" />
+                                    <Button text="Delete Selected" onAction="#onDeleteSelected" />
+                                    <Button text="Re-Index (placeholder)" onAction="#onReIndexPlaceholder" />
+                                </HBox>
+                                <Label fx:id="selectedFileLabel" text="No file selected" style="-fx-opacity: 0.8;" />
+                            </VBox>
+                        </top>
+                        <center>
+                            <ListView fx:id="documentsListView" />
+                        </center>
+                    </BorderPane>
+                </Tab>
+
+                <Tab text="Manage Knowledge Base" closable="false">
+                    <BorderPane padding="15">
+                        <top>
+                            <VBox spacing="8">
+                                <Label text="Edit the core admission knowledge text used by the system." />
+                                <HBox spacing="10">
+                                    <Button text="Update" onAction="#onUpdateKnowledgeBase" />
+                                </HBox>
+                            </VBox>
+                        </top>
+                        <center>
+                            <TextArea fx:id="knowledgeBaseTextArea" wrapText="true" />
+                        </center>
+                    </BorderPane>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+
+</BorderPane>
